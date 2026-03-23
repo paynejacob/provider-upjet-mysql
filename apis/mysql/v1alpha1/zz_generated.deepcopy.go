@@ -808,9 +808,29 @@ func (in *UserInitParameters) DeepCopyInto(out *UserInitParameters) {
 		*out = new(v1.SecretKeySelector)
 		**out = **in
 	}
+	if in.AuthStringHexSecretRef != nil {
+		in, out := &in.AuthStringHexSecretRef, &out.AuthStringHexSecretRef
+		*out = new(v1.SecretKeySelector)
+		**out = **in
+	}
+	if in.DiscardOldPassword != nil {
+		in, out := &in.DiscardOldPassword, &out.DiscardOldPassword
+		*out = new(bool)
+		**out = **in
+	}
 	if in.PasswordSecretRef != nil {
 		in, out := &in.PasswordSecretRef, &out.PasswordSecretRef
 		*out = new(v1.SecretKeySelector)
+		**out = **in
+	}
+	if in.PasswordWoSecretRef != nil {
+		in, out := &in.PasswordWoSecretRef, &out.PasswordWoSecretRef
+		*out = new(v1.SecretKeySelector)
+		**out = **in
+	}
+	if in.PasswordWoVersion != nil {
+		in, out := &in.PasswordWoVersion, &out.PasswordWoVersion
+		*out = new(float64)
 		**out = **in
 	}
 	if in.PlaintextPasswordSecretRef != nil {
@@ -887,6 +907,11 @@ func (in *UserObservation) DeepCopyInto(out *UserObservation) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.DiscardOldPassword != nil {
+		in, out := &in.DiscardOldPassword, &out.DiscardOldPassword
+		*out = new(bool)
+		**out = **in
+	}
 	if in.Host != nil {
 		in, out := &in.Host, &out.Host
 		*out = new(string)
@@ -895,6 +920,11 @@ func (in *UserObservation) DeepCopyInto(out *UserObservation) {
 	if in.ID != nil {
 		in, out := &in.ID, &out.ID
 		*out = new(string)
+		**out = **in
+	}
+	if in.PasswordWoVersion != nil {
+		in, out := &in.PasswordWoVersion, &out.PasswordWoVersion
+		*out = new(float64)
 		**out = **in
 	}
 	if in.RetainOldPassword != nil {
@@ -939,6 +969,16 @@ func (in *UserParameters) DeepCopyInto(out *UserParameters) {
 		*out = new(v1.SecretKeySelector)
 		**out = **in
 	}
+	if in.AuthStringHexSecretRef != nil {
+		in, out := &in.AuthStringHexSecretRef, &out.AuthStringHexSecretRef
+		*out = new(v1.SecretKeySelector)
+		**out = **in
+	}
+	if in.DiscardOldPassword != nil {
+		in, out := &in.DiscardOldPassword, &out.DiscardOldPassword
+		*out = new(bool)
+		**out = **in
+	}
 	if in.Host != nil {
 		in, out := &in.Host, &out.Host
 		*out = new(string)
@@ -947,6 +987,16 @@ func (in *UserParameters) DeepCopyInto(out *UserParameters) {
 	if in.PasswordSecretRef != nil {
 		in, out := &in.PasswordSecretRef, &out.PasswordSecretRef
 		*out = new(v1.SecretKeySelector)
+		**out = **in
+	}
+	if in.PasswordWoSecretRef != nil {
+		in, out := &in.PasswordWoSecretRef, &out.PasswordWoSecretRef
+		*out = new(v1.SecretKeySelector)
+		**out = **in
+	}
+	if in.PasswordWoVersion != nil {
+		in, out := &in.PasswordWoVersion, &out.PasswordWoVersion
+		*out = new(float64)
 		**out = **in
 	}
 	if in.PlaintextPasswordSecretRef != nil {

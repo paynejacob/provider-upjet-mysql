@@ -89,8 +89,7 @@ spec:
                   authPlugin:
                     description: Use an authentication plugin to authenticate the
                       user instead of using password authentication.  Description
-                      of the fields allowed in the block below. Conflicts with password
-                      and plaintext_password.
+                      of the fields allowed in the block below.
                     type: string
                   authStringHashedSecretRef:
                     description: Use an already hashed string as a parameter to auth_plugin.
@@ -110,14 +109,11 @@ spec:
                     - name
                     - namespace
                     type: object
-                  host:
-                    description: The source host of the user. Defaults to "localhost".
-                    type: string
-                  passwordSecretRef:
-                    description: Deprecated alias of plaintext_password, whose value
-                      is stored as plaintext in state. Prefer to use plaintext_password
-                      instead, which stores the password as an unsalted hash. Conflicts
-                      with auth_plugin.
+                  authStringHexSecretRef:
+                    description: The authentication string as a hexadecimal value(can
+                      be with or without 0x prefix). Primarily used with caching_sha2_password
+                      authentication plugin. Cannot be used with plaintext_password,
+                      password, password_wo, or auth_string_hashed.
                     properties:
                       key:
                         description: The key to select.
@@ -133,11 +129,63 @@ spec:
                     - name
                     - namespace
                     type: object
+                  discardOldPassword:
+                    description: When true, the old password is deleted. Defaults
+                      to false. This use MySQL Dual Password Support feature and requires
+                      MySQL version 8.0.14 or newer. See MySQL Dual Password documentation
+                      for more.
+                    type: boolean
+                  host:
+                    description: The source host of the user. Defaults to "localhost".
+                    type: string
+                  passwordSecretRef:
+                    description: Deprecated alias of plaintext_password, whose value
+                      is stored as plaintext in state. Prefer to use plaintext_password
+                      instead, which stores the password as an unsalted hash.
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  passwordWoSecretRef:
+                    description: The write-only plaintext password that accepts plain
+                      text like plaintext_password but is not stored in state. Cannot
+                      be used with plaintext_password, password, auth_string_hashed,
+                      or auth_string_hex.
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  passwordWoVersion:
+                    description: Used together with password_wo to trigger password
+                      changes. Whenever the version is changed, the password provided
+                      in password_wo is applied to the user.
+                    type: number
                   plaintextPasswordSecretRef:
                     description: The password for the user. This must be provided
                       in plain text, so the data source for it must be secured. An
-                      unsalted hash of the provided password is stored in state. Conflicts
-                      with auth_plugin.
+                      unsalted hash of the provided password is stored in state.
                     properties:
                       key:
                         description: The key to select.
@@ -195,8 +243,7 @@ spec:
                   authPlugin:
                     description: Use an authentication plugin to authenticate the
                       user instead of using password authentication.  Description
-                      of the fields allowed in the block below. Conflicts with password
-                      and plaintext_password.
+                      of the fields allowed in the block below.
                     type: string
                   authStringHashedSecretRef:
                     description: Use an already hashed string as a parameter to auth_plugin.
@@ -216,11 +263,11 @@ spec:
                     - name
                     - namespace
                     type: object
-                  passwordSecretRef:
-                    description: Deprecated alias of plaintext_password, whose value
-                      is stored as plaintext in state. Prefer to use plaintext_password
-                      instead, which stores the password as an unsalted hash. Conflicts
-                      with auth_plugin.
+                  authStringHexSecretRef:
+                    description: The authentication string as a hexadecimal value(can
+                      be with or without 0x prefix). Primarily used with caching_sha2_password
+                      authentication plugin. Cannot be used with plaintext_password,
+                      password, password_wo, or auth_string_hashed.
                     properties:
                       key:
                         description: The key to select.
@@ -236,11 +283,60 @@ spec:
                     - name
                     - namespace
                     type: object
+                  discardOldPassword:
+                    description: When true, the old password is deleted. Defaults
+                      to false. This use MySQL Dual Password Support feature and requires
+                      MySQL version 8.0.14 or newer. See MySQL Dual Password documentation
+                      for more.
+                    type: boolean
+                  passwordSecretRef:
+                    description: Deprecated alias of plaintext_password, whose value
+                      is stored as plaintext in state. Prefer to use plaintext_password
+                      instead, which stores the password as an unsalted hash.
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  passwordWoSecretRef:
+                    description: The write-only plaintext password that accepts plain
+                      text like plaintext_password but is not stored in state. Cannot
+                      be used with plaintext_password, password, auth_string_hashed,
+                      or auth_string_hex.
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  passwordWoVersion:
+                    description: Used together with password_wo to trigger password
+                      changes. Whenever the version is changed, the password provided
+                      in password_wo is applied to the user.
+                    type: number
                   plaintextPasswordSecretRef:
                     description: The password for the user. This must be provided
                       in plain text, so the data source for it must be secured. An
-                      unsalted hash of the provided password is stored in state. Conflicts
-                      with auth_plugin.
+                      unsalted hash of the provided password is stored in state.
                     properties:
                       key:
                         description: The key to select.
@@ -457,15 +553,25 @@ spec:
                   authPlugin:
                     description: Use an authentication plugin to authenticate the
                       user instead of using password authentication.  Description
-                      of the fields allowed in the block below. Conflicts with password
-                      and plaintext_password.
+                      of the fields allowed in the block below.
                     type: string
+                  discardOldPassword:
+                    description: When true, the old password is deleted. Defaults
+                      to false. This use MySQL Dual Password Support feature and requires
+                      MySQL version 8.0.14 or newer. See MySQL Dual Password documentation
+                      for more.
+                    type: boolean
                   host:
                     description: The source host of the user. Defaults to "localhost".
                     type: string
                   id:
                     description: The id of the user created, composed as "username@host".
                     type: string
+                  passwordWoVersion:
+                    description: Used together with password_wo to trigger password
+                      changes. Whenever the version is changed, the password provided
+                      in password_wo is applied to the user.
+                    type: number
                   retainOldPassword:
                     description: When true, the old password is retained when changing
                       the password. Defaults to false. This use MySQL Dual Password

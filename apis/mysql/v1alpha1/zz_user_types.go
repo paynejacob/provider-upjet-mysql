@@ -39,16 +39,28 @@ type UserInitParameters struct {
 	// Required when auth_plugin is aad_auth. This should be block containing type and identity. type can be one of user, group and service_principal. identity then should containt either UPN of user, name of group or Client ID of service principal.
 	AadIdentity []AadIdentityInitParameters `json:"aadIdentity,omitempty" tf:"aad_identity,omitempty"`
 
-	// Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below. Conflicts with password and plaintext_password.
+	// Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below.
 	AuthPlugin *string `json:"authPlugin,omitempty" tf:"auth_plugin,omitempty"`
 
 	// Use an already hashed string as a parameter to auth_plugin. This can be used with passwords as well as with other auth strings.
 	AuthStringHashedSecretRef *v1.SecretKeySelector `json:"authStringHashedSecretRef,omitempty" tf:"-"`
 
-	// Deprecated alias of plaintext_password, whose value is stored as plaintext in state. Prefer to use plaintext_password instead, which stores the password as an unsalted hash. Conflicts with auth_plugin.
+	// The authentication string as a hexadecimal value(can be with or without 0x prefix). Primarily used with caching_sha2_password authentication plugin. Cannot be used with plaintext_password, password, password_wo, or auth_string_hashed.
+	AuthStringHexSecretRef *v1.SecretKeySelector `json:"authStringHexSecretRef,omitempty" tf:"-"`
+
+	// When true, the old password is deleted. Defaults to false. This use MySQL Dual Password Support feature and requires MySQL version 8.0.14 or newer. See MySQL Dual Password documentation for more.
+	DiscardOldPassword *bool `json:"discardOldPassword,omitempty" tf:"discard_old_password,omitempty"`
+
+	// Deprecated alias of plaintext_password, whose value is stored as plaintext in state. Prefer to use plaintext_password instead, which stores the password as an unsalted hash.
 	PasswordSecretRef *v1.SecretKeySelector `json:"passwordSecretRef,omitempty" tf:"-"`
 
-	// The password for the user. This must be provided in plain text, so the data source for it must be secured. An unsalted hash of the provided password is stored in state. Conflicts with auth_plugin.
+	// The write-only plaintext password that accepts plain text like plaintext_password but is not stored in state. Cannot be used with plaintext_password, password, auth_string_hashed, or auth_string_hex.
+	PasswordWoSecretRef *v1.SecretKeySelector `json:"passwordWoSecretRef,omitempty" tf:"-"`
+
+	// Used together with password_wo to trigger password changes. Whenever the version is changed, the password provided in password_wo is applied to the user.
+	PasswordWoVersion *float64 `json:"passwordWoVersion,omitempty" tf:"password_wo_version,omitempty"`
+
+	// The password for the user. This must be provided in plain text, so the data source for it must be secured. An unsalted hash of the provided password is stored in state.
 	PlaintextPasswordSecretRef *v1.SecretKeySelector `json:"plaintextPasswordSecretRef,omitempty" tf:"-"`
 
 	// When true, the old password is retained when changing the password. Defaults to false. This use MySQL Dual Password Support feature and requires MySQL version 8.0.14 or newer. See MySQL Dual Password documentation for more.
@@ -63,14 +75,20 @@ type UserObservation struct {
 	// Required when auth_plugin is aad_auth. This should be block containing type and identity. type can be one of user, group and service_principal. identity then should containt either UPN of user, name of group or Client ID of service principal.
 	AadIdentity []AadIdentityObservation `json:"aadIdentity,omitempty" tf:"aad_identity,omitempty"`
 
-	// Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below. Conflicts with password and plaintext_password.
+	// Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below.
 	AuthPlugin *string `json:"authPlugin,omitempty" tf:"auth_plugin,omitempty"`
+
+	// When true, the old password is deleted. Defaults to false. This use MySQL Dual Password Support feature and requires MySQL version 8.0.14 or newer. See MySQL Dual Password documentation for more.
+	DiscardOldPassword *bool `json:"discardOldPassword,omitempty" tf:"discard_old_password,omitempty"`
 
 	// The source host of the user. Defaults to "localhost".
 	Host *string `json:"host,omitempty" tf:"host,omitempty"`
 
 	// The id of the user created, composed as "username@host".
 	ID *string `json:"id,omitempty" tf:"id,omitempty"`
+
+	// Used together with password_wo to trigger password changes. Whenever the version is changed, the password provided in password_wo is applied to the user.
+	PasswordWoVersion *float64 `json:"passwordWoVersion,omitempty" tf:"password_wo_version,omitempty"`
 
 	// When true, the old password is retained when changing the password. Defaults to false. This use MySQL Dual Password Support feature and requires MySQL version 8.0.14 or newer. See MySQL Dual Password documentation for more.
 	RetainOldPassword *bool `json:"retainOldPassword,omitempty" tf:"retain_old_password,omitempty"`
@@ -85,7 +103,7 @@ type UserParameters struct {
 	// +kubebuilder:validation:Optional
 	AadIdentity []AadIdentityParameters `json:"aadIdentity,omitempty" tf:"aad_identity,omitempty"`
 
-	// Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below. Conflicts with password and plaintext_password.
+	// Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below.
 	// +kubebuilder:validation:Optional
 	AuthPlugin *string `json:"authPlugin,omitempty" tf:"auth_plugin,omitempty"`
 
@@ -93,15 +111,31 @@ type UserParameters struct {
 	// +kubebuilder:validation:Optional
 	AuthStringHashedSecretRef *v1.SecretKeySelector `json:"authStringHashedSecretRef,omitempty" tf:"-"`
 
+	// The authentication string as a hexadecimal value(can be with or without 0x prefix). Primarily used with caching_sha2_password authentication plugin. Cannot be used with plaintext_password, password, password_wo, or auth_string_hashed.
+	// +kubebuilder:validation:Optional
+	AuthStringHexSecretRef *v1.SecretKeySelector `json:"authStringHexSecretRef,omitempty" tf:"-"`
+
+	// When true, the old password is deleted. Defaults to false. This use MySQL Dual Password Support feature and requires MySQL version 8.0.14 or newer. See MySQL Dual Password documentation for more.
+	// +kubebuilder:validation:Optional
+	DiscardOldPassword *bool `json:"discardOldPassword,omitempty" tf:"discard_old_password,omitempty"`
+
 	// The source host of the user. Defaults to "localhost".
 	// +kubebuilder:validation:Optional
 	Host *string `json:"host,omitempty" tf:"host,omitempty"`
 
-	// Deprecated alias of plaintext_password, whose value is stored as plaintext in state. Prefer to use plaintext_password instead, which stores the password as an unsalted hash. Conflicts with auth_plugin.
+	// Deprecated alias of plaintext_password, whose value is stored as plaintext in state. Prefer to use plaintext_password instead, which stores the password as an unsalted hash.
 	// +kubebuilder:validation:Optional
 	PasswordSecretRef *v1.SecretKeySelector `json:"passwordSecretRef,omitempty" tf:"-"`
 
-	// The password for the user. This must be provided in plain text, so the data source for it must be secured. An unsalted hash of the provided password is stored in state. Conflicts with auth_plugin.
+	// The write-only plaintext password that accepts plain text like plaintext_password but is not stored in state. Cannot be used with plaintext_password, password, auth_string_hashed, or auth_string_hex.
+	// +kubebuilder:validation:Optional
+	PasswordWoSecretRef *v1.SecretKeySelector `json:"passwordWoSecretRef,omitempty" tf:"-"`
+
+	// Used together with password_wo to trigger password changes. Whenever the version is changed, the password provided in password_wo is applied to the user.
+	// +kubebuilder:validation:Optional
+	PasswordWoVersion *float64 `json:"passwordWoVersion,omitempty" tf:"password_wo_version,omitempty"`
+
+	// The password for the user. This must be provided in plain text, so the data source for it must be secured. An unsalted hash of the provided password is stored in state.
 	// +kubebuilder:validation:Optional
 	PlaintextPasswordSecretRef *v1.SecretKeySelector `json:"plaintextPasswordSecretRef,omitempty" tf:"-"`
 

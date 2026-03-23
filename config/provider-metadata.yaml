@@ -157,7 +157,7 @@ resources:
                     }
         argumentDocs:
             GRANT: documentation
-            database: '- (Required) The database to grant privileges on.'
+            database: '- (Optional) The database to grant privileges on. Defaults to *, which is all databases.'
             grant: '- (Optional) Whether to also give the user privileges to grant the same privileges to other users.'
             host: '- (Optional) The source host of the user. Defaults to "localhost". Conflicts with role.'
             privileges: '- (Optional) A list of privileges to grant to the user. Refer to a list of privileges (such as here) for applicable privileges. Conflicts with roles.'
@@ -276,6 +276,22 @@ resources:
                   "host": "example.com",
                   "user": "nologin"
                 }
+            - name: nologin
+              manifest: |-
+                {
+                  "auth_plugin": "caching_sha2_password",
+                  "host": "example.com",
+                  "plaintext_password": "password",
+                  "user": "nologin"
+                }
+            - name: nologin
+              manifest: |-
+                {
+                  "auth_plugin": "caching_sha2_password",
+                  "auth_string_hex": "0x244124303035246C4F1E0D5D1631594F5C56701F3D327D073A724C706273307A5965516C7756",
+                  "host": "example.com",
+                  "user": "nologin"
+                }
             - name: aadupn
               manifest: |-
                 {
@@ -300,16 +316,20 @@ resources:
                 When specified, you need to specify aad_identity. For more information about AzureAD authentication into MySQL
                 see here. You have to use AAD authenticated administrator mysql session to use this plugin.
             aad_identity: '- (Optional) Required when auth_plugin is aad_auth. This should be block containing type and identity. type can be one of user, group and service_principal. identity then should containt either UPN of user, name of group or Client ID of service principal.'
-            auth_plugin: '- (Optional) Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below. Conflicts with password and plaintext_password.'
+            auth_plugin: '- (Optional) Use an authentication plugin to authenticate the user instead of using password authentication.  Description of the fields allowed in the block below.'
             auth_string_hashed: '- (Optional) Use an already hashed string as a parameter to auth_plugin. This can be used with passwords as well as with other auth strings.'
+            auth_string_hex: '- (Optional) The authentication string as a hexadecimal value(can be with or without 0x prefix). Primarily used with caching_sha2_password authentication plugin. Cannot be used with plaintext_password, password, password_wo, or auth_string_hashed.'
+            discard_old_password: '- (Optional) When true, the old password is deleted. Defaults to false. This use MySQL Dual Password Support feature and requires MySQL version 8.0.14 or newer. See MySQL Dual Password documentation for more.'
             host: '- (Optional) The source host of the user. Defaults to "localhost".'
             id: '- The id of the user created, composed as "username@host".'
             mysql_no_login: |-
                 - Uses the MySQL No-Login Authentication Plugin. The
                 No-Login Authentication Plugin must be active in MySQL. For more information,
                 see here.
-            password: '- (Optional) Deprecated alias of plaintext_password, whose value is stored as plaintext in state. Prefer to use plaintext_password instead, which stores the password as an unsalted hash. Conflicts with auth_plugin.'
-            plaintext_password: '- (Optional) The password for the user. This must be provided in plain text, so the data source for it must be secured. An unsalted hash of the provided password is stored in state. Conflicts with auth_plugin.'
+            password: '- (Optional) Deprecated alias of plaintext_password, whose value is stored as plaintext in state. Prefer to use plaintext_password instead, which stores the password as an unsalted hash.'
+            password_wo: '- (Optional) The write-only plaintext password that accepts plain text like plaintext_password but is not stored in state. Cannot be used with plaintext_password, password, auth_string_hashed, or auth_string_hex.'
+            password_wo_version: '- (Optional) Used together with password_wo to trigger password changes. Whenever the version is changed, the password provided in password_wo is applied to the user.'
+            plaintext_password: '- (Optional) The password for the user. This must be provided in plain text, so the data source for it must be secured. An unsalted hash of the provided password is stored in state.'
             retain_old_password: '- (Optional) When true, the old password is retained when changing the password. Defaults to false. This use MySQL Dual Password Support feature and requires MySQL version 8.0.14 or newer. See MySQL Dual Password documentation for more.'
             tls_option: '- (Optional) An TLS-Option for the CREATE USER or ALTER USER statement. The value is suffixed to REQUIRE. A value of ''SSL'' will generate a CREATE USER ... REQUIRE SSL statement. See the MYSQL  for more. Ignored if MySQL version is under 5.7.0.'
             user: '- (Required) The name of the user.'

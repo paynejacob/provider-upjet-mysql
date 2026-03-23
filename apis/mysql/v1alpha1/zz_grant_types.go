@@ -15,7 +15,7 @@ import (
 
 type GrantInitParameters struct {
 
-	// The database to grant privileges on.
+	// The database to grant privileges on. Defaults to *, which is all databases.
 	// +crossplane:generate:reference:type=github.com/crossplane-contrib/provider-upjet-mysql/apis/mysql/v1alpha1.Database
 	Database *string `json:"database,omitempty" tf:"database,omitempty"`
 
@@ -65,7 +65,7 @@ type GrantInitParameters struct {
 
 type GrantObservation struct {
 
-	// The database to grant privileges on.
+	// The database to grant privileges on. Defaults to *, which is all databases.
 	Database *string `json:"database,omitempty" tf:"database,omitempty"`
 
 	// Whether to also give the user privileges to grant the same privileges to other users.
@@ -99,7 +99,7 @@ type GrantObservation struct {
 
 type GrantParameters struct {
 
-	// The database to grant privileges on.
+	// The database to grant privileges on. Defaults to *, which is all databases.
 	// +crossplane:generate:reference:type=github.com/crossplane-contrib/provider-upjet-mysql/apis/mysql/v1alpha1.Database
 	// +kubebuilder:validation:Optional
 	Database *string `json:"database,omitempty" tf:"database,omitempty"`

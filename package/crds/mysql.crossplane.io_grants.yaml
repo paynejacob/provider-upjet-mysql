@@ -74,7 +74,8 @@ spec:
               forProvider:
                 properties:
                   database:
-                    description: The database to grant privileges on.
+                    description: The database to grant privileges on. Defaults to
+                      *, which is all databases.
                     type: string
                   databaseRef:
                     description: Reference to a Database in mysql to populate database.
@@ -279,7 +280,8 @@ spec:
                   autoscaler.
                 properties:
                   database:
-                    description: The database to grant privileges on.
+                    description: The database to grant privileges on. Defaults to
+                      *, which is all databases.
                     type: string
                   databaseRef:
                     description: Reference to a Database in mysql to populate database.
@@ -643,7 +645,8 @@ spec:
               atProvider:
                 properties:
                   database:
-                    description: The database to grant privileges on.
+                    description: The database to grant privileges on. Defaults to
+                      *, which is all databases.
                     type: string
                   grant:
                     description: Whether to also give the user privileges to grant

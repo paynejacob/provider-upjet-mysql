@@ -12,7 +12,7 @@ TERRAFORM_VERSION_VALID := $(shell [ "$(TERRAFORM_VERSION)" = "`printf "$(TERRAF
 
 export TERRAFORM_PROVIDER_SOURCE ?= petoju/mysql
 export TERRAFORM_PROVIDER_REPO ?= https://github.com/petoju/terraform-provider-mysql.git
-export TERRAFORM_PROVIDER_VERSION ?= 3.0.65
+export TERRAFORM_PROVIDER_VERSION ?= 3.0.88
 export TERRAFORM_PROVIDER_DOWNLOAD_NAME ?= terraform-provider-mysql
 export TERRAFORM_PROVIDER_DOWNLOAD_URL_PREFIX ?= https://github.com/petoju/$(TERRAFORM_PROVIDER_DOWNLOAD_NAME)/releases/download/v$(TERRAFORM_PROVIDER_VERSION)
 export TERRAFORM_NATIVE_PROVIDER_BINARY ?= terraform-provider-mysql_v$(TERRAFORM_PROVIDER_VERSION)_x5
